@@ -55,11 +55,7 @@ loginForm.addEventListener("submit", async (event) => {
       return;
     }
 
-    if (profile.role === "parent") {
-      window.location.href = "parent-dashboard.html";
-    } else {
-      window.location.href = "student-dashboard.html";
-    }
+    window.location.href = "dashboard.html";
   } catch (error) {
     showMessage("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in config.js", true);
   }
@@ -103,9 +99,9 @@ registerForm.addEventListener("submit", async (event) => {
     }
 
     // Ensure wallet exists for the student
-    const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("student_id", userId).single();
+    const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("user_id", userId).single();
     if (!existingWallet) {
-      await window.supabase.from("wallets").insert({ student_id: userId, balance: 0 });
+      await window.supabase.from("wallets").insert({ user_id: userId, balance: 0 });
     }
 
     showMessage("Account created successfully. Redirecting...");
@@ -124,9 +120,7 @@ registerForm.addEventListener("submit", async (event) => {
       const { data: userData } = await window.supabase.auth.getUser();
       const user = userData.user;
       if (user) {
-        const { data: profile } = await window.supabase.from("profiles").select("role").eq("id", user.id).single();
-        if (profile?.role === "parent") window.location.href = "parent-dashboard.html";
-        else window.location.href = "student-dashboard.html";
+        window.location.href = "dashboard.html";
       } else {
         window.location.href = "index.html";
       }

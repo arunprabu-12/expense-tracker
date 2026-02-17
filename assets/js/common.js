@@ -33,7 +33,7 @@ async function loadCurrentUserProfile(userId) {
       }
 
       // also ensure wallet exists
-      await window.supabase.from("wallets").insert({ student_id: userId, balance: 0 });
+      await window.supabase.from("wallets").insert({ user_id: userId, balance: 0 });
 
       return fallbackProfile;
     }
