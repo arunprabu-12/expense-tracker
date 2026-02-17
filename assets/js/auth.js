@@ -21,6 +21,14 @@ function setMode(mode) {
 loginTab.addEventListener("click", () => setMode("login"));
 registerTab.addEventListener("click", () => setMode("register"));
 
+function redirectByRole(role) {
+  if (role === "parent") {
+    window.location.href = "parent-dashboard.html";
+    return;
+  }
+  window.location.href = "student-dashboard.html";
+}
+
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -35,7 +43,6 @@ loginForm.addEventListener("submit", async (event) => {
       return;
     }
 
-    // determine role and redirect
     const { data: userData } = await window.supabase.auth.getUser();
     const user = userData.user;
     if (!user) {
@@ -50,12 +57,11 @@ loginForm.addEventListener("submit", async (event) => {
       .single();
 
     if (profileError) {
-      // fallback to dashboard if profiles table not set yet
-      window.location.href = "dashboard.html";
+      window.location.href = "student-dashboard.html";
       return;
     }
 
-    window.location.href = "dashboard.html";
+    redirectByRole(profile?.role);
   } catch (error) {
     showMessage("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in config.js", true);
   }
@@ -66,8 +72,8 @@ registerForm.addEventListener("submit", async (event) => {
 
   const name = document.getElementById("registerName").value.trim();
   const email = document.getElementById("registerEmail").value.trim();
+  const role = document.getElementById("registerRole").value;
   const password = document.getElementById("registerPassword").value;
-  const monthlyAllowance = Number(document.getElementById("registerAllowance").value || 0);
 
   showMessage("Creating account...");
   try {
@@ -84,12 +90,11 @@ registerForm.addEventListener("submit", async (event) => {
       return;
     }
 
-    // create profile in new `profiles` table. default role = 'student'
     const { error: profileError } = await window.supabase.from("profiles").upsert({
       id: userId,
       name,
       email,
-      role: "student",
+      role,
       parent_id: null
     });
 
@@ -98,16 +103,15 @@ registerForm.addEventListener("submit", async (event) => {
       return;
     }
 
-    // Ensure wallet exists for the student
-    const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("user_id", userId).single();
-    if (!existingWallet) {
-      await window.supabase.from("wallets").insert({ user_id: userId, balance: 0 });
+    if (role === "student") {
+      const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("user_id", userId).single();
+      if (!existingWallet) {
+        await window.supabase.from("wallets").insert({ user_id: userId, balance: 0 });
+      }
     }
 
     showMessage("Account created successfully. Redirecting...");
-    setTimeout(() => {
-      window.location.href = "dashboard.html";
-    }, 600);
+    setTimeout(() => redirectByRole(role), 600);
   } catch (error) {
     showMessage("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in config.js", true);
   }
@@ -120,7 +124,8 @@ registerForm.addEventListener("submit", async (event) => {
       const { data: userData } = await window.supabase.auth.getUser();
       const user = userData.user;
       if (user) {
-        window.location.href = "dashboard.html";
+        const { data: profile } = await window.supabase.from("profiles").select("role").eq("id", user.id).single();
+        redirectByRole(profile?.role);
       } else {
         window.location.href = "index.html";
       }

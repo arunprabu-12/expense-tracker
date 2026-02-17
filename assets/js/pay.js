@@ -8,7 +8,7 @@ async function doPayment(category) {
   if (!user) return;
 
   // fetch wallet
-  const { data: wallet, error: walletErr } = await window.supabase.from("wallets").select("*").eq("student_id", user.id).single();
+  const { data: wallet, error: walletErr } = await window.supabase.from("wallets").select("*").eq("user_id", user.id).single();
   if (walletErr) return alert(`Failed to fetch wallet: ${walletErr.message}`);
   const balance = Number(wallet?.balance || 0);
   if (balance < amount) return alert("Insufficient balance");
@@ -16,16 +16,17 @@ async function doPayment(category) {
   const newBalance = balance - amount;
 
   // update wallet
-  const { error: updateErr } = await window.supabase.from("wallets").update({ balance: newBalance }).eq("student_id", user.id);
+  const { error: updateErr } = await window.supabase.from("wallets").update({ balance: newBalance }).eq("user_id", user.id);
   if (updateErr) return alert(`Failed to update wallet: ${updateErr.message}`);
 
   // insert transaction
   const { error: txErr } = await window.supabase.from("transactions").insert({
-    student_id: user.id,
+    user_id: user.id,
     amount: amount,
     category,
-    type: "debit",
-    created_at: new Date().toISOString()
+    description: `Quick pay - ${category}`,
+    type: "expense",
+    date: new Date().toISOString().split("T")[0]
   });
 
   if (txErr) return alert(`Payment recorded but transaction insert failed: ${txErr.message}`);

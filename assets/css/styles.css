@@ -148,6 +148,8 @@ select:focus {
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-primary {
@@ -463,3 +465,64 @@ th {
 }
 .risk.safe { background:#eefdf8; color:#065f58; }
 .risk.critical { background:#fff1f2; color:#9f1239; }
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(7px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.student-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.student-name {
+  font-weight: 800;
+}
+
+.student-email {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.student-balance {
+  font-weight: 700;
+}

@@ -11,6 +11,8 @@
   <header class="app-header">
     <h1>Student Wallet</h1>
     <div class="header-actions">
+      <a href="add-transaction.html" class="btn btn-ghost">Add Transaction</a>
+      <a href="analytics.html" class="btn btn-ghost">Analytics</a>
       <span id="userBadge"></span>
       <button id="logoutBtn" class="btn">Logout</button>
     </div>
@@ -21,13 +23,14 @@
       <h2>Balance</h2>
       <div id="walletBalance" class="big-balance">Loading...</div>
       <div class="prediction-row">
-        <div id="predictedSpending">Predicted next 7 days: —</div>
-        <div id="riskIndicator" class="risk safe">Status: —</div>
+        <div id="predictedSpending">Predicted next 7 days: -</div>
+        <div id="riskIndicator" class="risk safe">Status: -</div>
       </div>
     </section>
 
     <section class="quickpay-section">
       <h2>Quick Pay</h2>
+      <p class="subtitle">Choose a category, then pay or cancel.</p>
       <div class="quick-pay-grid" id="quickPayGrid">
         <button class="category-btn" data-category="Food">Food</button>
         <button class="category-btn" data-category="Transport">Transport</button>
@@ -51,15 +54,17 @@
       </div>
     </section>
 
-    <!-- Preset amount modal (hidden) -->
     <div id="presetModal" class="preset-modal hidden" role="dialog" aria-hidden="true">
       <div class="preset-modal-content">
-        <h3 id="presetModalTitle">Pay</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <h3 id="presetModalTitle" style="margin:0;">Pay</h3>
+          <button id="presetClose" class="btn btn-ghost" type="button">Close</button>
+        </div>
         <div class="preset-grid">
-          <button class="preset-amount">₹50</button>
-          <button class="preset-amount">₹100</button>
-          <button class="preset-amount">₹150</button>
-          <button class="preset-amount">₹200</button>
+          <button class="preset-amount">Rs 50</button>
+          <button class="preset-amount">Rs 100</button>
+          <button class="preset-amount">Rs 150</button>
+          <button class="preset-amount">Rs 200</button>
           <button class="preset-amount other">Other</button>
         </div>
         <div class="preset-other hidden">
@@ -70,6 +75,9 @@
             <button id="presetOtherPay" class="btn btn-primary">Pay</button>
             <button id="presetCancel" class="btn btn-ghost">Cancel</button>
           </div>
+        </div>
+        <div style="margin-top:10px;">
+          <button id="presetBack" class="btn btn-ghost" type="button">Back</button>
         </div>
       </div>
     </div>
