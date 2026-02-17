@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Wallet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Student Wallet</h1>
+    <div class="header-actions">
+      <span id="userBadge"></span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="balance-section">
+      <h2>Balance</h2>
+      <div id="walletBalance" class="big-balance">Loading...</div>
+      <div class="prediction-row">
+        <div id="predictedSpending">Predicted next 7 days: —</div>
+        <div id="riskIndicator" class="risk safe">Status: —</div>
+      </div>
+    </section>
+
+    <section class="quickpay-section">
+      <h2>Quick Pay</h2>
+      <div class="quick-pay-grid" id="quickPayGrid">
+        <button class="category-btn" data-category="Food">Food</button>
+        <button class="category-btn" data-category="Transport">Transport</button>
+        <button class="category-btn" data-category="Books">Books</button>
+        <button class="category-btn" data-category="Shopping">Shopping</button>
+        <button class="category-btn" data-category="Other">Other</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Recent Transactions</h2>
+      <div class="table-wrap">
+        <table class="transactions-table" id="transactionsTable">
+          <thead>
+            <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th></tr>
+          </thead>
+          <tbody id="transactionsBody">
+            <tr><td colspan="4">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Preset amount modal (hidden) -->
+    <div id="presetModal" class="preset-modal hidden" role="dialog" aria-hidden="true">
+      <div class="preset-modal-content">
+        <h3 id="presetModalTitle">Pay</h3>
+        <div class="preset-grid">
+          <button class="preset-amount">₹50</button>
+          <button class="preset-amount">₹100</button>
+          <button class="preset-amount">₹150</button>
+          <button class="preset-amount">₹200</button>
+          <button class="preset-amount other">Other</button>
+        </div>
+        <div class="preset-other hidden">
+          <label>Enter amount
+            <input id="presetOtherInput" type="number" min="1" step="0.01" />
+          </label>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button id="presetOtherPay" class="btn btn-primary">Pay</button>
+            <button id="presetCancel" class="btn btn-ghost">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabaseClient.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/student-dashboard.js"></script>
+</body>
+</html>

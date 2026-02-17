@@ -9,7 +9,7 @@ async function requireAuth() {
 
 async function loadCurrentUserProfile(userId) {
   const { data, error } = await window.supabase
-    .from("users")
+    .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
@@ -23,13 +23,18 @@ async function loadCurrentUserProfile(userId) {
         id: userId,
         name: authUser?.user_metadata?.name || "Student",
         email: authUser?.email || "",
-        monthly_allowance: 0
+        role: "student",
+        parent_id: null
       };
 
-      const { error: insertError } = await window.supabase.from("users").insert(fallbackProfile);
+      const { error: insertError } = await window.supabase.from("profiles").insert(fallbackProfile);
       if (insertError) {
         throw insertError;
       }
+
+      // also ensure wallet exists
+      await window.supabase.from("wallets").insert({ student_id: userId, balance: 0 });
+
       return fallbackProfile;
     }
     throw error;

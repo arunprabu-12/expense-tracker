@@ -29,12 +29,37 @@ loginForm.addEventListener("submit", async (event) => {
   showMessage("Signing in...");
 
   try {
-    const { error } = await window.supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      showMessage(error.message, true);
+    const { error: signInError } = await window.supabase.auth.signInWithPassword({ email, password });
+    if (signInError) {
+      showMessage(signInError.message, true);
       return;
     }
-    window.location.href = "dashboard.html";
+
+    // determine role and redirect
+    const { data: userData } = await window.supabase.auth.getUser();
+    const user = userData.user;
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    const { data: profile, error: profileError } = await window.supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError) {
+      // fallback to dashboard if profiles table not set yet
+      window.location.href = "dashboard.html";
+      return;
+    }
+
+    if (profile.role === "parent") {
+      window.location.href = "parent-dashboard.html";
+    } else {
+      window.location.href = "student-dashboard.html";
+    }
   } catch (error) {
     showMessage("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in config.js", true);
   }
@@ -63,16 +88,24 @@ registerForm.addEventListener("submit", async (event) => {
       return;
     }
 
-    const { error: profileError } = await window.supabase.from("users").upsert({
+    // create profile in new `profiles` table. default role = 'student'
+    const { error: profileError } = await window.supabase.from("profiles").upsert({
       id: userId,
       name,
       email,
-      monthly_allowance: monthlyAllowance
+      role: "student",
+      parent_id: null
     });
 
     if (profileError) {
       showMessage(`Account created, but profile setup failed: ${profileError.message}`, true);
       return;
+    }
+
+    // Ensure wallet exists for the student
+    const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("student_id", userId).single();
+    if (!existingWallet) {
+      await window.supabase.from("wallets").insert({ student_id: userId, balance: 0 });
     }
 
     showMessage("Account created successfully. Redirecting...");
@@ -88,7 +121,15 @@ registerForm.addEventListener("submit", async (event) => {
   try {
     const { data: { session } } = await window.supabase.auth.getSession();
     if (session) {
-      window.location.href = "dashboard.html";
+      const { data: userData } = await window.supabase.auth.getUser();
+      const user = userData.user;
+      if (user) {
+        const { data: profile } = await window.supabase.from("profiles").select("role").eq("id", user.id).single();
+        if (profile?.role === "parent") window.location.href = "parent-dashboard.html";
+        else window.location.href = "student-dashboard.html";
+      } else {
+        window.location.href = "index.html";
+      }
     }
   } catch (error) {
     console.warn("Supabase not configured:", error.message);
