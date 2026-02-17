@@ -21,9 +21,11 @@
   <div class="app-layout">
     <aside class="sidebar">
       <nav>
+        <a class="nav-link" href="student-dashboard.html">Student Wallet</a>
         <a class="nav-link" href="dashboard.html">Dashboard</a>
         <a class="nav-link active" href="add-transaction.html">Add Transaction</a>
         <a class="nav-link" href="analytics.html">Analytics</a>
+        <a class="nav-link" href="pay.html">Pay</a>
       </nav>
     </aside>
 
@@ -38,7 +40,17 @@
               <input type="number" id="amount" min="0.01" step="0.01" required placeholder="e.g. 120" />
             </label>
             <label>Category
-              <input type="text" id="category" required placeholder="Food, Transport, Books..." />
+              <select id="category" required>
+                <option value="">Choose category</option>
+                <option value="Food">Food</option>
+                <option value="Transport">Transport</option>
+                <option value="Books">Books</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Bills">Bills</option>
+                <option value="Health">Health</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Other">Other</option>
+              </select>
             </label>
             <label>Description
               <input type="text" id="description" placeholder="Optional details" />

@@ -60,7 +60,38 @@ async function setupCommonLayout() {
     });
   }
 
+  setupKeyboardNavigation();
+
   return user;
+}
+
+function setupKeyboardNavigation() {
+  if (window.__appShortcutsBound) return;
+  window.__appShortcutsBound = true;
+
+  const shortcuts = {
+    h: "student-dashboard.html",
+    d: "dashboard.html",
+    t: "add-transaction.html",
+    a: "analytics.html",
+    p: "pay.html",
+    r: "parent-dashboard.html"
+  };
+
+  document.addEventListener("keydown", (event) => {
+    const tag = event.target?.tagName?.toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select" || event.target?.isContentEditable) return;
+    if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+
+    const key = String(event.key || "").toLowerCase();
+    const target = shortcuts[key];
+    if (!target) return;
+
+    event.preventDefault();
+    if (!window.location.pathname.endsWith(`/${target}`) && !window.location.pathname.endsWith(target)) {
+      window.location.href = target;
+    }
+  });
 }
 
 window.common = {
