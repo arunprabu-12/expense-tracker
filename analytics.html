@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Allowance Manager | Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Student Allowance Manager</div>
+    <div class="topbar-right">
+      <span id="userBadge" class="user-badge"></span>
+      <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="add-transaction.html">Add Transaction</a>
+        <a class="nav-link active" href="analytics.html">Analytics</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Analytics</h1>
+      <p class="subtitle">Visual insights into your spending behavior.</p>
+
+      <section class="charts-grid">
+        <article class="card">
+          <h2>Expenses by Category</h2>
+          <canvas id="categoryChart" height="260"></canvas>
+        </article>
+        <article class="card">
+          <h2>Monthly Expenses</h2>
+          <canvas id="monthlyChart" height="260"></canvas>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabaseClient.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/analytics.js"></script>
+</body>
+</html>

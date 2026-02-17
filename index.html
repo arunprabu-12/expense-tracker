@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Allowance Manager | Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body class="auth-body">
+  <div class="bg-shapes" aria-hidden="true">
+    <span class="shape shape-1"></span>
+    <span class="shape shape-2"></span>
+    <span class="shape shape-3"></span>
+  </div>
+
+  <main class="auth-layout">
+    <section class="auth-card">
+      <h1>Student Allowance & Expense Management System</h1>
+      <p class="subtitle">Track allowance, manage expenses, and stay in control.</p>
+
+      <div class="tabs" role="tablist" aria-label="Authentication tabs">
+        <button id="loginTab" class="tab active" type="button">Login</button>
+        <button id="registerTab" class="tab" type="button">Register</button>
+      </div>
+
+      <form id="loginForm" class="auth-form" novalidate>
+        <label>Email
+          <input type="email" id="loginEmail" required placeholder="you@example.com" />
+        </label>
+        <label>Password
+          <input type="password" id="loginPassword" required minlength="6" placeholder="********" />
+        </label>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden" novalidate>
+        <label>Full Name
+          <input type="text" id="registerName" required placeholder="Jane Student" />
+        </label>
+        <label>Email
+          <input type="email" id="registerEmail" required placeholder="you@example.com" />
+        </label>
+        <label>Password
+          <input type="password" id="registerPassword" required minlength="6" placeholder="Create a password" />
+        </label>
+        <label>Monthly Allowance
+          <input type="number" id="registerAllowance" min="0" step="0.01" required placeholder="5000" />
+        </label>
+        <button type="submit" class="btn btn-primary">Create Account</button>
+      </form>
+
+      <p id="authMessage" class="message" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabaseClient.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>
