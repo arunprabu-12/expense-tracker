@@ -118,13 +118,16 @@ async function doQuickPay(userId, category, amount) {
     document.getElementById("quickPayGrid").addEventListener("click", (e) => {
       const btn = e.target.closest(".category-btn");
       if (!btn) return;
+      e.preventDefault();
       showPresetModal(btn.dataset.category);
     });
 
     document.querySelectorAll(".preset-amount").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
         if (btn.classList.contains("other")) {
           document.querySelector(".preset-other").classList.remove("hidden");
+          document.getElementById("presetOtherInput").focus();
           return;
         }
         const amount = Number(btn.textContent.trim().replace(/[^0-9.]/g, ""));
@@ -133,23 +136,39 @@ async function doQuickPay(userId, category, amount) {
       });
     });
 
-    document.getElementById("presetOtherPay").addEventListener("click", () => {
+    document.getElementById("presetOtherPay").addEventListener("click", (e) => {
+      e.preventDefault();
       const val = Number(document.getElementById("presetOtherInput").value);
       if (!val || val <= 0) return alert("Enter a valid amount");
       const category = document.getElementById("presetModal").dataset.category;
       doQuickPay(user.id, category, val);
     });
 
-    document.getElementById("presetCancel").addEventListener("click", hidePresetModal);
-    document.getElementById("presetClose").addEventListener("click", hidePresetModal);
-    document.getElementById("presetBack").addEventListener("click", hidePresetModal);
+    document.getElementById("presetCancel").addEventListener("click", (e) => {
+      e.preventDefault();
+      hidePresetModal();
+    });
+    document.getElementById("presetClose").addEventListener("click", (e) => {
+      e.preventDefault();
+      hidePresetModal();
+    });
+    document.getElementById("presetBack").addEventListener("click", (e) => {
+      e.preventDefault();
+      hidePresetModal();
+    });
 
     document.getElementById("presetModal").addEventListener("click", (e) => {
-      if (e.target.id === "presetModal") hidePresetModal();
+      if (e.target.id === "presetModal") {
+        e.preventDefault();
+        hidePresetModal();
+      }
     });
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") hidePresetModal();
+      if (e.key === "Escape" && !document.getElementById("presetModal").classList.contains("hidden")) {
+        e.preventDefault();
+        hidePresetModal();
+      }
     });
 
     window.supabase

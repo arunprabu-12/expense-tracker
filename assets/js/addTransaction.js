@@ -29,15 +29,24 @@ function showMessage(message, isError = false) {
       return;
     }
 
+    const submitBtn = transactionForm.querySelector("button[type='submit']");
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Saving...";
+
     showMessage("Saving transaction...");
     const { error } = await window.supabase.from("transactions").insert(payload);
     if (error) {
       showMessage(error.message, true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
       return;
     }
 
     transactionForm.reset();
     dateInput.value = new Date().toISOString().split("T")[0];
     showMessage("Transaction saved successfully.");
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalBtnText;
   });
 })();

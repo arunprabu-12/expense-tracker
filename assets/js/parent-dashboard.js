@@ -43,30 +43,42 @@ async function renderStudents(parentId) {
   }
 
   document.querySelectorAll("button[data-student-id]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
       const sid = btn.getAttribute("data-student-id");
       const amountRaw = prompt("Enter amount to add to student's wallet:", "0");
       const amount = Number(amountRaw);
       if (!amount || amount <= 0) return alert("Invalid amount");
 
-      const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("user_id", sid).single();
-      if (!existingWallet) {
-        await window.supabase.from("wallets").insert({ user_id: sid, balance: amount });
-      } else {
-        const newBalance = Number(existingWallet.balance || 0) + amount;
-        await window.supabase.from("wallets").update({ balance: newBalance }).eq("user_id", sid);
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = "Processing...";
+
+      try {
+        const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("user_id", sid).single();
+        if (!existingWallet) {
+          await window.supabase.from("wallets").insert({ user_id: sid, balance: amount });
+        } else {
+          const newBalance = Number(existingWallet.balance || 0) + amount;
+          await window.supabase.from("wallets").update({ balance: newBalance }).eq("user_id", sid);
+        }
+
+        await window.supabase.from("transactions").insert({
+          user_id: sid,
+          amount,
+          category: "Added by Parent",
+          description: "Wallet top-up by parent",
+          type: "income",
+          date: new Date().toISOString().split("T")[0]
+        });
+
+        alert("Amount added successfully!");
+        await renderStudents(parentId);
+      } catch (err) {
+        alert(`Failed to add amount: ${err.message}`);
+        btn.disabled = false;
+        btn.textContent = originalText;
       }
-
-      await window.supabase.from("transactions").insert({
-        user_id: sid,
-        amount,
-        category: "Added by Parent",
-        description: "Wallet top-up by parent",
-        type: "income",
-        date: new Date().toISOString().split("T")[0]
-      });
-
-      await renderStudents(parentId);
     });
   });
 }

@@ -18,8 +18,14 @@ function setMode(mode) {
   showMessage("");
 }
 
-loginTab.addEventListener("click", () => setMode("login"));
-registerTab.addEventListener("click", () => setMode("register"));
+loginTab.addEventListener("click", (e) => {
+  e.preventDefault();
+  setMode("login");
+});
+registerTab.addEventListener("click", (e) => {
+  e.preventDefault();
+  setMode("register");
+});
 
 function redirectByRole(role) {
   if (role === "parent") {
@@ -34,12 +40,19 @@ loginForm.addEventListener("submit", async (event) => {
 
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
+  const submitBtn = loginForm.querySelector("button[type='submit']");
+  
   showMessage("Signing in...");
+  const originalBtnText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Signing in...";
 
   try {
     const { error: signInError } = await window.supabase.auth.signInWithPassword({ email, password });
     if (signInError) {
       showMessage(signInError.message, true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
       return;
     }
 
@@ -64,6 +77,8 @@ loginForm.addEventListener("submit", async (event) => {
     redirectByRole(profile?.role);
   } catch (error) {
     showMessage("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in config.js", true);
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalBtnText;
   }
 });
 
@@ -74,19 +89,28 @@ registerForm.addEventListener("submit", async (event) => {
   const email = document.getElementById("registerEmail").value.trim();
   const role = document.getElementById("registerRole").value;
   const password = document.getElementById("registerPassword").value;
+  const submitBtn = registerForm.querySelector("button[type='submit']");
 
   showMessage("Creating account...");
+  const originalBtnText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Creating account...";
+  
   try {
     const { data, error } = await window.supabase.auth.signUp({ email, password });
 
     if (error) {
       showMessage(error.message, true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
       return;
     }
 
     const userId = data.user?.id;
     if (!userId) {
       showMessage("User created. Please confirm your email and sign in.");
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
       return;
     }
 
@@ -100,6 +124,8 @@ registerForm.addEventListener("submit", async (event) => {
 
     if (profileError) {
       showMessage(`Account created, but profile setup failed: ${profileError.message}`, true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
       return;
     }
 
@@ -114,6 +140,8 @@ registerForm.addEventListener("submit", async (event) => {
     setTimeout(() => redirectByRole(role), 600);
   } catch (error) {
     showMessage("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in config.js", true);
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalBtnText;
   }
 });
 

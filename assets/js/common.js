@@ -88,7 +88,8 @@ function setupKeyboardNavigation() {
     if (!target) return;
 
     event.preventDefault();
-    if (!window.location.pathname.endsWith(`/${target}`) && !window.location.pathname.endsWith(target)) {
+    const currentPath = window.location.pathname;
+    if (!currentPath.endsWith(`/${target}`) && !currentPath.endsWith(target)) {
       window.location.href = target;
     }
   });

@@ -526,3 +526,119 @@ th {
 .student-balance {
   font-weight: 700;
 }
+/* Additional utility classes for enhanced styling */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+/* Animation for successful page transitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container, .pay-container {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Enhanced focus states for accessibility */
+.btn:focus,
+input:focus,
+select:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 0;
+}
+
+/* Hover lift effect for cards */
+.card, .pay-card, .student-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover, .pay-card:hover {
+  box-shadow: 0 20px 40px rgba(18, 40, 66, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Success state styling */
+.success {
+  color: var(--success);
+}
+
+.success-bg {
+  background: rgba(21, 128, 61, 0.1);
+  border-color: var(--success);
+}
+
+/* Error state styling */
+.error {
+  color: var(--danger);
+}
+
+.error-bg {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: var(--danger);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .balance-display {
+    font-size: clamp(1.5rem, 5vw, 3rem);
+  }
+
+  .app-header {
+    padding: 12px 16px;
+  }
+
+  .header-actions {
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .balance-display {
+    font-size: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+}
