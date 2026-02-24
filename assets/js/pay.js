@@ -187,6 +187,16 @@ async function processPayment() {
     payButton.innerHTML = '<span class="loading-spinner"></span> Processing...';
     payButton.disabled = true;
 
+    // confirm payment with user
+    if (!window.confirm(`Confirm payment of ${formatCurrency(amount)} for ${paymentState.selectedCategory}?`)) {
+      // reset button state
+      paymentState.isProcessing = false;
+      const payButtonCancel = document.getElementById("payButton");
+      payButtonCancel.innerHTML = "<span id='payButtonText'>Complete Payment</span>";
+      payButtonCancel.disabled = false;
+      return;
+    }
+
     // 1. Fetch current wallet balance
     const { data: wallet, error: walletError } = await supabase
       .from("wallets")
@@ -261,6 +271,15 @@ async function processPayment() {
  */
 async function initializePayPage() {
   try {
+    // reset state so re-initialization clears any previous flags
+    paymentState = {
+      selectedCategory: null,
+      selectedAmount: null,
+      customAmount: null,
+      userId: null,
+      isProcessing: false
+    };
+
     // 1. Setup common layout (checks auth, shows user badge, etc.)
     const user = await window.common.setupCommonLayout();
     if (!user) {
@@ -273,38 +292,62 @@ async function initializePayPage() {
     // 2. Load wallet balance
     await loadWalletBalance();
 
-    // 3. Setup category button listeners
-    document.querySelectorAll(".category-button").forEach(btn => {
-      btn.addEventListener("click", (e) => {
+    // 3. ensure anchors navigate via delegated handler (common.js also does this)
+    document.body.addEventListener('click', anchorNavHandler);
+
+    // 4. Category and amount grids use event delegation so they work even if
+    //    the buttons are replaced or re-rendered later.
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    if (categoriesContainer) {
+      categoriesContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.category-button');
+        if (!btn) return;
         e.preventDefault();
         handleCategoryClick(btn.dataset.category, btn);
       });
-    });
+    }
 
-    // 4. Setup preset amount button listeners
-    document.querySelectorAll(".amount-button").forEach(btn => {
-      btn.addEventListener("click", (e) => {
+    const amountGrid = document.getElementById('amountGrid');
+    if (amountGrid) {
+      amountGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.amount-button');
+        if (!btn) return;
         e.preventDefault();
         handleAmountClick(Number(btn.dataset.amount), btn);
       });
-    });
+    }
 
     // 5. Setup custom amount input listener
-    document.getElementById("customAmount").addEventListener("input", handleCustomAmountChange);
+    const custom = document.getElementById('customAmount');
+    if (custom) custom.addEventListener('input', handleCustomAmountChange);
 
     // 6. Setup pay button listener
-    document.getElementById("payButton").addEventListener("click", (e) => {
-      e.preventDefault();
-      if (!paymentState.isProcessing) {
-        processPayment();
-      }
-    });
+    const payBtn = document.getElementById('payButton');
+    if (payBtn) {
+      payBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!paymentState.isProcessing) {
+          processPayment();
+        }
+      });
+    }
 
     console.log("Payment page initialized successfully");
 
   } catch (err) {
     console.error("Failed to initialize payment page:", err);
     showErrorMessage(err.message || "Failed to load payment page");
+  }
+}
+
+// basic navigation helper used by multiple pages
+function anchorNavHandler(e) {
+  const anchor = e.target.closest('a');
+  if (!anchor) return;
+  const href = anchor.getAttribute('href');
+  if (href && !href.startsWith('#')) {
+    e.preventDefault();
+    window.location.href = href;
   }
 }
 

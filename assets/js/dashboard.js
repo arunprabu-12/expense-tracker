@@ -19,7 +19,8 @@ function transactionRow(transaction) {
 
 async function fetchAndRender(userId) {
   const userProfile = await window.common.loadCurrentUserProfile(userId);
-  const monthlyAllowance = Number(userProfile.monthly_allowance || 0);
+  // `monthly_limit` is the field we store for allowances/limits
+  const monthlyAllowance = Number(userProfile.monthly_limit || 0);
 
   const monthStart = window.appUtils.startOfMonth();
   const { data: transactions, error } = await window.supabase
@@ -61,6 +62,17 @@ async function fetchAndRender(userId) {
     const user = await window.common.setupCommonLayout();
     if (!user) return;
     await fetchAndRender(user.id);
+
+    // ensure nav links always navigate even if some event handler prevents default
+    document.querySelectorAll('a.nav-link, header .header-actions a').forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = anchor.getAttribute('href');
+        if (href) {
+          window.location.href = href;
+        }
+      });
+    });
 
     window.supabase
       .channel(`dashboard-transactions-${user.id}`)

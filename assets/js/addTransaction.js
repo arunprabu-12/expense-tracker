@@ -12,6 +12,17 @@ function showMessage(message, isError = false) {
   const user = await window.common.setupCommonLayout();
   if (!user) return;
 
+  // ensure nav links work
+  document.querySelectorAll('a').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+      const href = anchor.getAttribute('href');
+      if (href && !href.startsWith('#')) {
+        e.preventDefault();
+        window.location.href = href;
+      }
+    });
+  });
+
   transactionForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 

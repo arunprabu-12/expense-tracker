@@ -100,6 +100,17 @@ async function fetchAndRenderCharts(userId) {
     const user = await window.common.setupCommonLayout();
     if (!user) return;
 
+    // make sure links navigate
+    document.querySelectorAll('a').forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        const href = anchor.getAttribute('href');
+        if (href && !href.startsWith('#')) {
+          e.preventDefault();
+          window.location.href = href;
+        }
+      });
+    });
+
     await fetchAndRenderCharts(user.id);
 
     window.supabase

@@ -4,6 +4,23 @@ const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
 const authMessage = document.getElementById("authMessage");
 
+// when the role selector changes we only require/ask for allowance if student
+(function setupRoleToggle() {
+  const roleSelect = document.getElementById("registerRole");
+  const allowanceRow = document.getElementById("registerAllowanceRow");
+  const allowanceInput = document.getElementById("registerAllowance");
+  if (!roleSelect || !allowanceRow || !allowanceInput) return;
+
+  function update() {
+    const isStudent = roleSelect.value === "student";
+    allowanceRow.style.display = isStudent ? "" : "none";
+    allowanceInput.required = isStudent;
+  }
+
+  roleSelect.addEventListener("change", update);
+  update();
+})();
+
 function showMessage(text, isError = false) {
   authMessage.textContent = text;
   authMessage.style.color = isError ? "#dc2626" : "#0f766e";
@@ -28,7 +45,8 @@ registerTab.addEventListener("click", (e) => {
 });
 
 function redirectByRole(role) {
-  if (role === "parent") {
+  const r = (role || "").toLowerCase();
+  if (r === "parent") {
     window.location.href = "parent-dashboard.html";
     return;
   }
@@ -70,12 +88,33 @@ loginForm.addEventListener("submit", async (event) => {
       .single();
 
     if (profileError) {
-      // profile lookup failed; continue to dashboard as default
-      window.location.href = "student-dashboard.html";
+      console.warn('Profile lookup error', profileError);
+      showMessage('Login succeeded but profile not found. Please contact support.', true);
       return;
     }
 
-    redirectByRole(profile?.role);
+    if (!profile) {
+      showMessage('No profile associated with this account. Please register first.', true);
+      return;
+    }
+
+    let role = (profile.role || '').toLowerCase().trim();
+    if (!role) {
+      showMessage('Your account does not have a role assigned. Contact support.', true);
+      return;
+    }
+
+    if (role === 'student') {
+      // offer to switch if they expected a parent account
+      if (confirm('Your account is registered as a student. Change it to a parent account?')) {
+        const { error: updErr } = await window.supabase.from('profiles').update({ role: 'parent' }).eq('id', user.id);
+        if (!updErr) {
+          role = 'parent';
+        }
+      }
+    }
+
+    redirectByRole(role);
   } catch (error) {
     showMessage("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in config.js", true);
     submitBtn.disabled = false;
@@ -115,13 +154,21 @@ registerForm.addEventListener("submit", async (event) => {
       return;
     }
 
-    const { error: profileError } = await window.supabase.from("profiles").upsert({
+    const profileData = {
       id: userId,
       name,
       email,
       role,
       parent_id: null
-    });
+    };
+    if (role === "student") {
+      const allowanceVal = Number(document.getElementById("registerAllowance").value);
+      if (!isNaN(allowanceVal)) {
+        profileData.monthly_limit = allowanceVal;
+      }
+    }
+
+    const { error: profileError } = await window.supabase.from("profiles").upsert(profileData);
 
     if (profileError) {
       showMessage(`Account created, but profile setup failed: ${profileError.message}`, true);

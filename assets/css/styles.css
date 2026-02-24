@@ -23,6 +23,22 @@ body {
   background: radial-gradient(circle at 10% 20%, #e8f7f5 0%, #f4f7fb 45%), var(--bg);
 }
 
+.app-header {
+  background: linear-gradient(135deg, #0f766e 0%, #2563eb 100%);
+  color: #fff;
+  padding: 12px 24px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.app-header .header-actions a,
+.app-header .header-actions button {
+  color: #fff;
+}
+
 .auth-body {
   min-height: 100vh;
   display: grid;
@@ -152,6 +168,11 @@ select:focus {
   display: inline-block;
 }
 
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
 .btn-primary {
   color: #fff;
   background: linear-gradient(135deg, #0f766e, #0b5f59);
@@ -160,6 +181,11 @@ select:focus {
 .btn-ghost {
   border: 1px solid var(--line);
   background: #fff;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.btn-ghost:hover {
+  background: var(--primary-soft);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .hidden {
@@ -246,10 +272,33 @@ select:focus {
   margin-bottom: 18px;
 }
 
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.filter-row select,
+.filter-row input {
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.analytics-section {
+  margin-top: 24px;
+}
+
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(260px, 1fr));
   gap: 14px;
+}
+
+/* keep chart canvases from getting too wide on large screens */
+.charts-grid canvas {
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .card {
@@ -368,6 +417,15 @@ th {
   font-size: 2.4rem;
   font-weight: 900;
   margin: 8px 0 12px;
+}
+
+/* quick pay button hover effect */
+.category-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.category-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 .balance-wrapper .btn-ghost {
@@ -516,6 +574,18 @@ th {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.student-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.student-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.transactions-table tr:hover {
+  background: var(--primary-soft);
 }
 
 .student-name {

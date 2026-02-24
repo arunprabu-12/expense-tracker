@@ -31,15 +31,57 @@
       </div>
     </section>
 
+    <!-- monthly summary -->
+    <section class="cards-grid" id="monthlySummary">
+      <article class="card">
+        <h3>Spent This Month</h3>
+        <p id="spentThisMonth" class="metric danger">₹0.00</p>
+      </article>
+      <article class="card">
+        <h3>Received This Month</h3>
+        <p id="receivedThisMonth" class="metric success">₹0.00</p>
+      </article>
+      <article class="card">
+        <h3>Remaining</h3>
+        <p id="remainingThisMonth" class="metric">₹0.00</p>
+      </article>
+    </section>
+
+    <section class="filter-section">
+      <div class="filter-row">
+        <select id="filterCategory">
+          <option value="">All categories</option>
+        </select>
+        <select id="filterType">
+          <option value="">All types</option>
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+        <input type="date" id="filterFrom" />
+        <input type="date" id="filterTo" />
+        <input type="text" id="searchInput" placeholder="Search category/description" />
+        <button id="clearFilters" class="btn btn-ghost">Clear</button>
+      </div>
+    </section>
+
+    <section class="charts-grid" id="analyticsSection" style="display:none;">
+      <article class="card">
+        <h3>Spending by Category</h3>
+        <canvas id="categoryChart" height="240"></canvas>
+      </article>
+      <article class="card">
+        <h3>Monthly Expenses</h3>
+        <canvas id="monthlyChart" height="240"></canvas>
+      </article>
+    </section>
+
     <section class="quickpay-section">
       <h2>Quick Pay</h2>
-      <p class="subtitle">Choose a category, then pay or cancel.</p>
+      <p class="subtitle">Instant shortcuts</p>
       <div class="quick-pay-grid" id="quickPayGrid">
-        <button class="category-btn" data-category="Food">Food</button>
-        <button class="category-btn" data-category="Transport">Transport</button>
-        <button class="category-btn" data-category="Books">Books</button>
-        <button class="category-btn" data-category="Shopping">Shopping</button>
-        <button class="category-btn" data-category="Other">Other</button>
+        <button class="category-btn" data-category="Food" data-amount="100">🍔 Food ₹100</button>
+        <button class="category-btn" data-category="Transport" data-amount="50">🚗 Transport ₹50</button>
+        <button class="category-btn" data-category="Shopping" data-amount="200">🛍️ Shopping ₹200</button>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 14px;">
         <a href="pay.html" class="btn btn-primary" style="flex: 1; text-align: center;">💳 Go to Pay Page</a>
@@ -51,10 +93,10 @@
       <div class="table-wrap">
         <table class="transactions-table" id="transactionsTable">
           <thead>
-            <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th></tr>
+            <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th></tr>
           </thead>
           <tbody id="transactionsBody">
-            <tr><td colspan="4">Loading...</td></tr>
+            <tr><td colspan="5">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -90,6 +132,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/supabaseClient.js"></script>
   <script src="assets/js/common.js"></script>

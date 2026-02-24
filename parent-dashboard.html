@@ -25,9 +25,57 @@
       <h2>Linked Students</h2>
       <div id="studentsList">Loading...</div>
     </section>
+
+    <section id="studentDetail" class="hidden">
+      <h2 id="detailTitle">Student Details</h2>
+      <div class="info-box" id="balanceInfo">Balance: -</div>
+      <div class="info-box" id="limitInfo">
+        Monthly limit: <span id="limitValue">-</span>
+        <button id="editLimit" class="btn btn-ghost btn-sm">Edit</button>
+      </div>
+      <div class="filter-row" style="margin-top:10px;">
+        <select id="parentFilterType">
+          <option value="">All types</option>
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+        <input type="date" id="parentFilterFrom" />
+        <input type="date" id="parentFilterTo" />
+        <input type="text" id="parentSearch" placeholder="Search" />
+        <button id="parentClear" class="btn btn-ghost">Clear</button>
+      </div>
+      <div class="cards-grid" id="parentSummary">
+        <article class="card">
+          <h3>Spent</h3>
+          <p id="parentSpent" class="metric danger">₹0.00</p>
+        </article>
+        <article class="card">
+          <h3>Received</h3>
+          <p id="parentReceived" class="metric success">₹0.00</p>
+        </article>
+      </div>
+      <div class="charts-grid" id="parentCharts" style="display:none;">
+        <article class="card">
+          <h3>Category Breakdown</h3>
+          <canvas id="parentCategoryChart"></canvas>
+        </article>
+        <article class="card">
+          <h3>Monthly Spending</h3>
+          <canvas id="parentMonthlyChart"></canvas>
+        </article>
+      </div>
+      <div class="table-wrap" style="margin-top:16px;">
+        <table>
+          <thead><tr><th>Date</th><th>Type</th><th>Cat</th><th>Desc</th><th>Amt</th></tr></thead>
+          <tbody id="parentTxBody"></tbody>
+        </table>
+      </div>
+      <button id="backToList" class="btn btn-ghost" style="margin-top:12px;">← Back</button>
+    </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/supabaseClient.js"></script>
   <script src="assets/js/common.js"></script>

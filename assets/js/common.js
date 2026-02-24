@@ -48,6 +48,10 @@ async function setupCommonLayout() {
   const user = await requireAuth();
   if (!user) return null;
 
+  // load profile so other parts of app know the role, etc.
+  const profile = await loadCurrentUserProfile(user.id);
+  window.__currentUserProfile = profile;
+
   const userBadge = document.getElementById("userBadge");
   if (userBadge) {
     userBadge.textContent = user.email;
@@ -61,6 +65,17 @@ async function setupCommonLayout() {
     });
   }
 
+  // global anchor delegation so <a> links behave consistently
+  document.body.addEventListener('click', (e) => {
+    const anchor = e.target.closest('a');
+    if (!anchor) return;
+    const href = anchor.getAttribute('href');
+    if (href && !href.startsWith('#')) {
+      e.preventDefault();
+      window.location.href = href;
+    }
+  });
+
   setupKeyboardNavigation();
 
   return user;
@@ -70,14 +85,17 @@ function setupKeyboardNavigation() {
   if (window.__appShortcutsBound) return;
   window.__appShortcutsBound = true;
 
+  const role = (window.__currentUserProfile?.role || "").toLowerCase();
   const shortcuts = {
     h: "student-dashboard.html",
     d: "dashboard.html",
     t: "add-transaction.html",
     a: "analytics.html",
     p: "pay.html",
-    r: "parent-dashboard.html"
   };
+  if (role === "parent") {
+    shortcuts.r = "parent-dashboard.html";
+  }
 
   document.addEventListener("keydown", (event) => {
     const tag = event.target?.tagName?.toLowerCase();

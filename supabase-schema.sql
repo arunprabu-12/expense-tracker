@@ -14,6 +14,8 @@ CREATE TABLE profiles (
   role TEXT DEFAULT 'student',
   parent_id UUID,
   phone_number TEXT,
+  -- monthly_limit stores a student's allowance or a parent's spending cap
+  monthly_limit NUMERIC DEFAULT NULL,
   min_balance NUMERIC DEFAULT 500,
   created_at TIMESTAMP DEFAULT NOW()
 );
