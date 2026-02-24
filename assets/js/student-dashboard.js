@@ -115,6 +115,15 @@ async function doQuickPay(userId, category, amount) {
 
     await renderStudentDashboard(user.id);
 
+    // allow manual refresh of the balance/transactions
+    const refreshBtn = document.getElementById("refreshBalanceBtn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        renderStudentDashboard(user.id);
+      });
+    }
+
     document.getElementById("quickPayGrid").addEventListener("click", (e) => {
       const btn = e.target.closest(".category-btn");
       if (!btn) return;

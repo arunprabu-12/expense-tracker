@@ -21,7 +21,10 @@
   <main class="container">
     <section class="balance-section">
       <h2>Balance</h2>
-      <div id="walletBalance" class="big-balance">Loading...</div>
+      <div class="balance-wrapper" style="display:flex;align-items:center;gap:8px;">
+        <div id="walletBalance" class="big-balance">Loading...</div>
+        <button id="refreshBalanceBtn" class="btn btn-ghost" title="Refresh balance">🔄</button>
+      </div>
       <div class="prediction-row">
         <div id="predictedSpending">Predicted next 7 days: -</div>
         <div id="riskIndicator" class="risk safe">Status: -</div>

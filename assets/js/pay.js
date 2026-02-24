@@ -7,8 +7,8 @@ let paymentState = {
   isProcessing: false
 };
 
-// Initialize supabase reference
-const supabase = window.supabaseClient;
+// use globally-created supabase client
+const supabase = window.supabase; // same object as window.supabaseClient (alias)
 
 /**
  * Format currency value using global utility

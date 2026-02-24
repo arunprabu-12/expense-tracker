@@ -12,7 +12,7 @@ Modern, responsive web app for students to:
 - Chart.js
 
 ## Project Structure
-- `index.html` - Login/Register
+- `index.html` (also accessible via `login.html`, which redirects to index) - Login/Register
 - `dashboard.html` - Allowance summary + recent transactions
 - `add-transaction.html` - Add income/expense
 - `analytics.html` - Pie and bar charts

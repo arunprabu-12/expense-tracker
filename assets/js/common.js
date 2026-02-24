@@ -1,7 +1,8 @@
 async function requireAuth() {
   const { data: { session } } = await window.supabase.auth.getSession();
   if (!session) {
-    window.location.href = "index.html";
+    // send user back to login page (alias login.html redirects to index)
+    window.location.href = "login.html";
     return null;
   }
   return session.user;
@@ -56,7 +57,7 @@ async function setupCommonLayout() {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       await window.supabase.auth.signOut();
-      window.location.href = "index.html";
+      window.location.href = "login.html";
     });
   }
 

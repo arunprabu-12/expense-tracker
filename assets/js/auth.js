@@ -59,7 +59,7 @@ loginForm.addEventListener("submit", async (event) => {
     const { data: userData } = await window.supabase.auth.getUser();
     const user = userData.user;
     if (!user) {
-      window.location.href = "index.html";
+      window.location.href = "login.html"; // fallback to login
       return;
     }
 
@@ -70,6 +70,7 @@ loginForm.addEventListener("submit", async (event) => {
       .single();
 
     if (profileError) {
+      // profile lookup failed; continue to dashboard as default
       window.location.href = "student-dashboard.html";
       return;
     }
@@ -155,7 +156,7 @@ registerForm.addEventListener("submit", async (event) => {
         const { data: profile } = await window.supabase.from("profiles").select("role").eq("id", user.id).single();
         redirectByRole(profile?.role);
       } else {
-        window.location.href = "index.html";
+        window.location.href = "login.html";
       }
     }
   } catch (error) {

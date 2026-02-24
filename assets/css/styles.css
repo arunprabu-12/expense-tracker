@@ -370,6 +370,10 @@ th {
   margin: 8px 0 12px;
 }
 
+.balance-wrapper .btn-ghost {
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
 .quick-pay-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
