@@ -88,10 +88,9 @@ function setupKeyboardNavigation() {
   const role = (window.__currentUserProfile?.role || "").toLowerCase();
   const shortcuts = {
     h: "student-dashboard.html",
-    d: "dashboard.html",
-    t: "add-transaction.html",
-    a: "analytics.html",
-    p: "pay.html",
+    d: "student-dashboard.html",
+    t: "student-dashboard.html",
+    a: "analytics.html"
   };
   if (role === "parent") {
     shortcuts.r = "parent-dashboard.html";

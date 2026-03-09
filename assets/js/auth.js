@@ -9,12 +9,17 @@ const authMessage = document.getElementById("authMessage");
   const roleSelect = document.getElementById("registerRole");
   const allowanceRow = document.getElementById("registerAllowanceRow");
   const allowanceInput = document.getElementById("registerAllowance");
-  if (!roleSelect || !allowanceRow || !allowanceInput) return;
+  const parentEmailRow = document.getElementById("registerParentEmailRow");
+  const parentEmailInput = document.getElementById("registerParentEmail");
+  if (!roleSelect || !allowanceRow || !allowanceInput || !parentEmailRow || !parentEmailInput) return;
 
   function update() {
     const isStudent = roleSelect.value === "student";
     allowanceRow.style.display = isStudent ? "" : "none";
     allowanceInput.required = isStudent;
+
+    parentEmailRow.style.display = isStudent ? "" : "none";
+    parentEmailInput.required = isStudent;
   }
 
   roleSelect.addEventListener("change", update);
@@ -60,6 +65,19 @@ loginForm.addEventListener("submit", async (event) => {
   const password = document.getElementById("loginPassword").value;
   const submitBtn = loginForm.querySelector("button[type='submit']");
   
+  // developer convenience: use fake credentials to bypass Supabase when
+  // running locally.  This lets you test navigation without hitting the API.
+  if (location.hostname === 'localhost' && ((email === 'fake@student' && password === 'password') || (email === 'fake@parent' && password === 'password'))) {
+    showMessage("Signing in with fake account...");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Signing in...";
+    // create a fake user profile in memory
+    const role = email.endsWith('parent') ? 'parent' : 'student';
+    window.__currentUserProfile = { id: 'fake-id', email, role };
+    setTimeout(() => redirectByRole(role), 300);
+    return;
+  }
+
   showMessage("Signing in...");
   const originalBtnText = submitBtn.textContent;
   submitBtn.disabled = true;
@@ -129,6 +147,7 @@ registerForm.addEventListener("submit", async (event) => {
   const email = document.getElementById("registerEmail").value.trim();
   const role = document.getElementById("registerRole").value;
   const password = document.getElementById("registerPassword").value;
+  const parentEmail = document.getElementById("registerParentEmail").value.trim().toLowerCase();
   const submitBtn = registerForm.querySelector("button[type='submit']");
 
   showMessage("Creating account...");
@@ -140,7 +159,7 @@ registerForm.addEventListener("submit", async (event) => {
     const { data, error } = await window.supabase.auth.signUp({ email, password });
 
     if (error) {
-      showMessage(error.message, true);
+      showMessage(error.message, true);x
       submitBtn.disabled = false;
       submitBtn.textContent = originalBtnText;
       return;
@@ -166,6 +185,9 @@ registerForm.addEventListener("submit", async (event) => {
       if (!isNaN(allowanceVal)) {
         profileData.monthly_limit = allowanceVal;
       }
+      if (parentEmail) {
+        profileData.parent_email = parentEmail;
+      }
     }
 
     const { error: profileError } = await window.supabase.from("profiles").upsert(profileData);
@@ -177,6 +199,31 @@ registerForm.addEventListener("submit", async (event) => {
       return;
     }
 
+    // if the student provided a parent email we try to link immediately if parent exists
+    if (role === "student" && parentEmail) {
+      const { data: parentProfile } = await window.supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', parentEmail)
+        .single();
+      if (parentProfile && parentProfile.id) {
+        await window.supabase.from('profiles').update({ parent_id: parentProfile.id }).eq('id', userId);
+      }
+    }
+
+    // when a parent account is created, retroactively attach any students who listed this email
+    if (role === "parent") {
+      const { data: orphaned } = await window.supabase
+        .from('profiles')
+        .select('id')
+        .eq('parent_email', email);
+      if (orphaned && orphaned.length) {
+        const updates = orphaned.map((s) => ({ id: s.id, parent_id: userId }));
+        await window.supabase.from('profiles').upsert(updates);
+      }
+    }
+
+    // ensure students have a wallet
     if (role === "student") {
       const { data: existingWallet } = await window.supabase.from("wallets").select("*").eq("user_id", userId).single();
       if (!existingWallet) {
@@ -192,7 +239,6 @@ registerForm.addEventListener("submit", async (event) => {
     submitBtn.textContent = originalBtnText;
   }
 });
-
 (async () => {
   try {
     const { data: { session } } = await window.supabase.auth.getSession();

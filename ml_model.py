@@ -37,7 +37,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 def fetch_transactions(student_id, days=180):
     """Fetch transactions for the student for the last `days` days."""
     since = (datetime.utcnow() - timedelta(days=days)).isoformat()
-    resp = supabase.table("transactions").select("amount, type, category, created_at").eq("student_id", student_id).gte("created_at", since).order("created_at", desc=False).execute()
+    resp = supabase.table("transactions").select("amount, type, category, created_at").eq("user_id", student_id).gte("created_at", since).order("created_at", desc=False).execute()
     if resp.error:
         raise RuntimeError(resp.error.message)
     data = resp.data or []

@@ -3,139 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Wallet</title>
+  <title>Student Allowance Manager | Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-  <header class="app-header">
-    <h1>Student Wallet</h1>
-    <div class="header-actions">
-      <a href="add-transaction.html" class="btn btn-ghost">Add Transaction</a>
-      <a href="analytics.html" class="btn btn-ghost">Analytics</a>
-      <span id="userBadge"></span>
-      <button id="logoutBtn" class="btn">Logout</button>
+  <header class="topbar">
+    <div class="brand">Student Allowance Manager</div>
+    <div class="topbar-right">
+      <span id="userBadge" class="user-badge"></span>
+      <button id="logoutBtn" class="btn btn-ghost">Logout</button>
     </div>
   </header>
 
-  <main class="container">
-    <section class="balance-section">
-      <h2>Balance</h2>
-      <div class="balance-wrapper" style="display:flex;align-items:center;gap:8px;">
-        <div id="walletBalance" class="big-balance">Loading...</div>
-        <button id="refreshBalanceBtn" class="btn btn-ghost" title="Refresh balance">🔄</button>
-      </div>
-      <div class="prediction-row">
-        <div id="predictedSpending">Predicted next 7 days: -</div>
-        <div id="riskIndicator" class="risk safe">Status: -</div>
-      </div>
-    </section>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav>
+        <a class="nav-link active" href="student-dashboard.html">Dashboard</a>
+        <a class="nav-link" href="analytics.html">Analytics</a>
+      </nav>
+    </aside>
 
-    <!-- monthly summary -->
-    <section class="cards-grid" id="monthlySummary">
-      <article class="card">
-        <h3>Spent This Month</h3>
-        <p id="spentThisMonth" class="metric danger">₹0.00</p>
-      </article>
-      <article class="card">
-        <h3>Received This Month</h3>
-        <p id="receivedThisMonth" class="metric success">₹0.00</p>
-      </article>
-      <article class="card">
-        <h3>Remaining</h3>
-        <p id="remainingThisMonth" class="metric">₹0.00</p>
-      </article>
-    </section>
+    <main class="content">
+      <h1>Student Dashboard</h1>
 
-    <section class="filter-section">
-      <div class="filter-row">
-        <select id="filterCategory">
-          <option value="">All categories</option>
-        </select>
-        <select id="filterType">
-          <option value="">All types</option>
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
-        <input type="date" id="filterFrom" />
-        <input type="date" id="filterTo" />
-        <input type="text" id="searchInput" placeholder="Search category/description" />
-        <button id="clearFilters" class="btn btn-ghost">Clear</button>
-      </div>
-    </section>
+      <section class="card">
+        <h2>Available Balance</h2>
+        <p id="balanceValue" class="metric">--</p>
+      </section>
 
-    <section class="charts-grid" id="analyticsSection" style="display:none;">
-      <article class="card">
-        <h3>Spending by Category</h3>
-        <canvas id="categoryChart" height="240"></canvas>
-      </article>
-      <article class="card">
-        <h3>Monthly Expenses</h3>
-        <canvas id="monthlyChart" height="240"></canvas>
-      </article>
-    </section>
-
-    <section class="quickpay-section">
-      <h2>Quick Pay</h2>
-      <p class="subtitle">Instant shortcuts</p>
-      <div class="quick-pay-grid" id="quickPayGrid">
-        <button class="category-btn" data-category="Food" data-amount="100">🍔 Food ₹100</button>
-        <button class="category-btn" data-category="Transport" data-amount="50">🚗 Transport ₹50</button>
-        <button class="category-btn" data-category="Shopping" data-amount="200">🛍️ Shopping ₹200</button>
-      </div>
-      <div style="display: flex; gap: 10px; margin-top: 14px;">
-        <a href="pay.html" class="btn btn-primary" style="flex: 1; text-align: center;">💳 Go to Pay Page</a>
-      </div>
-    </section>
-
-    <section>
-      <h2>Recent Transactions</h2>
-      <div class="table-wrap">
-        <table class="transactions-table" id="transactionsTable">
-          <thead>
-            <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th></tr>
-          </thead>
-          <tbody id="transactionsBody">
-            <tr><td colspan="5">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <div id="presetModal" class="preset-modal hidden" role="dialog" aria-hidden="true">
-      <div class="preset-modal-content">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-          <h3 id="presetModalTitle" style="margin:0;">Pay</h3>
-          <button id="presetClose" class="btn btn-ghost" type="button">Close</button>
-        </div>
-        <div class="preset-grid">
-          <button class="preset-amount">Rs 50</button>
-          <button class="preset-amount">Rs 100</button>
-          <button class="preset-amount">Rs 150</button>
-          <button class="preset-amount">Rs 200</button>
-          <button class="preset-amount other">Other</button>
-        </div>
-        <div class="preset-other hidden">
-          <label>Enter amount
-            <input id="presetOtherInput" type="number" min="1" step="0.01" />
+      <section class="card form-card">
+        <h2>Record an Expense</h2>
+        <form id="expenseForm" class="form-grid">
+          <label>Category
+            <select id="expenseCategory" required>
+              <option value="food">Food</option>
+              <option value="travel">Travel</option>
+              <option value="books">Books</option>
+              <option value="shopping">Shopping</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="other">Other</option>
+            </select>
           </label>
-          <div style="display:flex;gap:8px;margin-top:8px;">
-            <button id="presetOtherPay" class="btn btn-primary">Pay</button>
-            <button id="presetCancel" class="btn btn-ghost">Cancel</button>
-          </div>
+          <label>Amount
+            <input type="number" id="expenseAmount" min="0.01" step="0.01" required />
+          </label>
+          <label>Description
+            <input type="text" id="expenseDescription" placeholder="Optional" />
+          </label>
+          <button type="submit" class="btn btn-primary">Add Expense</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Recent Transactions</h2>
+        <div class="table-wrap">
+          <table id="transactionsTable">
+            <thead>
+              <tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
-        <div style="margin-top:10px;">
-          <button id="presetBack" class="btn btn-ghost" type="button">Back</button>
-        </div>
-      </div>
-    </div>
-  </main>
+      </section>
+
+      <section class="charts-grid">
+        <article class="card">
+          <h2>Expenses by Category</h2>
+          <canvas id="categoryChart" height="200"></canvas>
+        </article>
+        <article class="card">
+          <h2>Monthly Expenses</h2>
+          <canvas id="monthlyChart" height="200"></canvas>
+        </article>
+      </section>
+    </main>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/supabaseClient.js"></script>
   <script src="assets/js/common.js"></script>
+  <script src="assets/js/analytics.js"></script>
   <script src="assets/js/student-dashboard.js"></script>
 </body>
 </html>

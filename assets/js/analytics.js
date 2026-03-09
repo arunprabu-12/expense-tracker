@@ -95,6 +95,15 @@ async function fetchAndRenderCharts(userId) {
   renderMonthlyChart(monthlyTotals);
 }
 
+// export helpers for other scripts
+window.analytics = {
+  groupByCategory,
+  groupByMonth,
+  renderCategoryChart,
+  renderMonthlyChart,
+  fetchAndRenderCharts
+};
+
 (async () => {
   try {
     const user = await window.common.setupCommonLayout();
@@ -111,16 +120,45 @@ async function fetchAndRenderCharts(userId) {
       });
     });
 
-    await fetchAndRenderCharts(user.id);
+    // if parent, we choose a child to show charts for (first match)
+    let targetUserId = user.id;
+    const roleRes = await window.supabase.from('profiles').select('role,parent_id,parent_email').eq('id', user.id).single();
+    const role = roleRes.data?.role?.toLowerCase();
+    if (role === 'parent') {
+      // attempt to auto-link orphaned students as well
+      try {
+        await window.supabase
+          .from('profiles')
+          .update({ parent_id: user.id })
+          .eq('parent_email', user.email);
+      } catch (e) {
+        console.warn('analytics auto-link error', e);
+      }
+
+      // fetch one student linked to us
+      const filter = `parent_id.eq.${user.id},parent_email.eq.${JSON.stringify(
+        user.email
+      )}`;
+      const { data: children } = await window.supabase
+        .from('profiles')
+        .select('id')
+        .or(filter)
+        .limit(1);
+      if (children && children.length) {
+        targetUserId = children[0].id;
+      }
+    }
+
+    await fetchAndRenderCharts(targetUserId);
 
     window.supabase
-      .channel(`analytics-transactions-${user.id}`)
+      .channel(`analytics-transactions-${targetUserId}`)
       .on("postgres_changes", {
         event: "*",
         schema: "public",
         table: "transactions",
-        filter: `user_id=eq.${user.id}`
-      }, () => fetchAndRenderCharts(user.id))
+        filter: `user_id=eq.${targetUserId}`
+      }, () => fetchAndRenderCharts(targetUserId))
       .subscribe();
   } catch (error) {
     // eslint-disable-next-line no-alert

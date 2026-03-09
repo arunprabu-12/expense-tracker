@@ -3,82 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parent Dashboard</title>
+  <title>Student Allowance Manager | Parent Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
- </head>
+</head>
 <body>
-  <header class="app-header">
-    <h1>Parent Dashboard</h1>
-    <div class="header-actions">
-      <a href="student-dashboard.html" class="btn btn-ghost">Student Wallet</a>
-      <a href="dashboard.html" class="btn btn-ghost">Dashboard</a>
-      <a href="add-transaction.html" class="btn btn-ghost">Add Transaction</a>
-      <a href="analytics.html" class="btn btn-ghost">Analytics</a>
-      <span id="userBadge"></span>
-      <button id="logoutBtn" class="btn">Logout</button>
+  <header class="topbar">
+    <div class="brand">Student Allowance Manager</div>
+    <div class="topbar-right">
+      <span id="userBadge" class="user-badge"></span>
+      <button id="logoutBtn" class="btn btn-ghost">Logout</button>
     </div>
   </header>
 
-  <main class="container">
-    <section>
-      <h2>Linked Students</h2>
-      <div id="studentsList">Loading...</div>
-    </section>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav>
+        <a class="nav-link" href="parent-dashboard.html">Dashboard</a>
+        <a class="nav-link" href="analytics.html">Analytics</a>
+      </nav>
+    </aside>
 
-    <section id="studentDetail" class="hidden">
-      <h2 id="detailTitle">Student Details</h2>
-      <div class="info-box" id="balanceInfo">Balance: -</div>
-      <div class="info-box" id="limitInfo">
-        Monthly limit: <span id="limitValue">-</span>
-        <button id="editLimit" class="btn btn-ghost btn-sm">Edit</button>
-      </div>
-      <div class="filter-row" style="margin-top:10px;">
-        <select id="parentFilterType">
-          <option value="">All types</option>
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
-        <input type="date" id="parentFilterFrom" />
-        <input type="date" id="parentFilterTo" />
-        <input type="text" id="parentSearch" placeholder="Search" />
-        <button id="parentClear" class="btn btn-ghost">Clear</button>
-      </div>
-      <div class="cards-grid" id="parentSummary">
+    <main class="content">
+      <h1>Parent Dashboard</h1>
+
+      <section class="card" id="childSelectorCard">
+        <h2>Your Students</h2>
+        <select id="childSelect"></select>
+        <p id="noChildrenMsg" class="message" style="display:none;">No students linked to your account.</p>
+      </section>
+
+      <section class="card" id="childSummary" style="display:none;">
+        <h3 id="childName"></h3>
+        <p>Balance: <span id="childBalance">--</span></p>
+        <button id="addMoneyBtn" class="btn btn-primary">Add Funds</button>
+      </section>
+
+      <section class="card form-card hidden" id="addMoneyFormCard">
+        <h2>Add Funds</h2>
+        <form id="addMoneyForm">
+          <label>Amount
+            <input type="number" id="addMoneyAmount" min="0.01" step="0.01" required />
+          </label>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </section>
+
+      <section class="card" id="transactionsCard" style="display:none;">
+        <h2>Transactions</h2>
+        <div class="table-wrap">
+          <table id="transactionsTable">
+            <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Type</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="charts-grid" id="chartsSection" style="display:none;">
         <article class="card">
-          <h3>Spent</h3>
-          <p id="parentSpent" class="metric danger">₹0.00</p>
+          <h2>Expenses by Category</h2>
+          <canvas id="categoryChart" height="200"></canvas>
         </article>
         <article class="card">
-          <h3>Received</h3>
-          <p id="parentReceived" class="metric success">₹0.00</p>
+          <h2>Monthly Expenses</h2>
+          <canvas id="monthlyChart" height="200"></canvas>
         </article>
-      </div>
-      <div class="charts-grid" id="parentCharts" style="display:none;">
-        <article class="card">
-          <h3>Category Breakdown</h3>
-          <canvas id="parentCategoryChart"></canvas>
-        </article>
-        <article class="card">
-          <h3>Monthly Spending</h3>
-          <canvas id="parentMonthlyChart"></canvas>
-        </article>
-      </div>
-      <div class="table-wrap" style="margin-top:16px;">
-        <table>
-          <thead><tr><th>Date</th><th>Type</th><th>Cat</th><th>Desc</th><th>Amt</th></tr></thead>
-          <tbody id="parentTxBody"></tbody>
-        </table>
-      </div>
-      <button id="backToList" class="btn btn-ghost" style="margin-top:12px;">← Back</button>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/supabaseClient.js"></script>
   <script src="assets/js/common.js"></script>
+  <script src="assets/js/analytics.js"></script>
   <script src="assets/js/parent-dashboard.js"></script>
 </body>
 </html>

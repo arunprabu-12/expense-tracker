@@ -263,6 +263,11 @@ select:focus {
 
 .content {
   padding: 22px;
+  /* allow child sections to stack and stretch vertically */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: calc(100vh - 64px);
 }
 
 .cards-grid {
@@ -295,9 +300,10 @@ select:focus {
   gap: 14px;
 }
 
-/* keep chart canvases from getting too wide on large screens */
+/* charts should adapt to their container */
 .charts-grid canvas {
-  max-width: 300px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
 }
 

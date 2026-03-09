@@ -56,7 +56,7 @@ def check_low_balance(student_id):
         raise RuntimeError("Profile not found")
 
     # fetch wallet
-    w = supabase.table("wallets").select("balance").eq("student_id", student_id).single().execute()
+    w = supabase.table("wallets").select("balance").eq("user_id", student_id).single().execute()
     if w.error:
         raise RuntimeError(w.error.message)
     wallet = w.data or {"balance": 0}

@@ -13,6 +13,8 @@ CREATE TABLE profiles (
   name TEXT,
   role TEXT DEFAULT 'student',
   parent_id UUID,
+  parent_email TEXT,
+  parent_email TEXT,
   phone_number TEXT,
   -- monthly_limit stores a student's allowance or a parent's spending cap
   monthly_limit NUMERIC DEFAULT NULL,
@@ -43,6 +45,7 @@ CREATE TABLE transactions (
 create index if not exists wallets_user_id_idx on wallets(user_id);
 create index if not exists transactions_user_id_idx on transactions(user_id);
 create index if not exists transactions_user_date_idx on transactions(user_id, date);
+create index if not exists profiles_parent_email_idx on profiles(parent_email);
 
 -- 5) Enable Row Level Security
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -51,25 +54,57 @@ ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 
 -- 6) Create policies for authenticated users
 DROP POLICY IF EXISTS "Users can manage own profile" ON profiles;
-CREATE POLICY "Users can manage own profile"
+CREATE POLICY "Users can manage own profile or child"
 ON profiles
 FOR ALL
-USING (auth.uid() = id)
-WITH CHECK (auth.uid() = id);
+USING (
+  auth.uid() = id
+  OR parent_id = auth.uid()
+  OR parent_email = auth.email()
+)
+WITH CHECK (
+  auth.uid() = id
+  OR parent_id = auth.uid()
+  OR parent_email = auth.email()
+);
 
 DROP POLICY IF EXISTS "Users can manage own wallet" ON wallets;
-CREATE POLICY "Users can manage own wallet"
+CREATE POLICY "Users can manage own wallet or child"
 ON wallets
 FOR ALL
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING (
+  auth.uid() = user_id
+  OR user_id IN (
+    SELECT id FROM profiles
+    WHERE parent_id = auth.uid() OR parent_email = auth.email()
+  )
+)
+WITH CHECK (
+  auth.uid() = user_id
+  OR user_id IN (
+    SELECT id FROM profiles
+    WHERE parent_id = auth.uid() OR parent_email = auth.email()
+  )
+);
 
 DROP POLICY IF EXISTS "Users can manage own transactions" ON transactions;
-CREATE POLICY "Users can manage own transactions"
+CREATE POLICY "Users can manage own transactions or child"
 ON transactions
 FOR ALL
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING (
+  auth.uid() = user_id
+  OR user_id IN (
+    SELECT id FROM profiles
+    WHERE parent_id = auth.uid() OR parent_email = auth.email()
+  )
+)
+WITH CHECK (
+  auth.uid() = user_id
+  OR user_id IN (
+    SELECT id FROM profiles
+    WHERE parent_id = auth.uid() OR parent_email = auth.email()
+  )
+);
 
 -- 7) Automatically create wallet when profile is created
 CREATE OR REPLACE FUNCTION create_wallet()
